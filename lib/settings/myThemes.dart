@@ -12,6 +12,7 @@ class MyTheme {
       ),
       colorScheme: const ColorScheme.light(),
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      chipTheme: ChipThemeData(backgroundColor: Colors.white , selectedColor:Colors.black),
       shadowColor: Colors.white);
 
   static final lightTheme = ThemeData(
@@ -24,6 +25,7 @@ class MyTheme {
       ),
       colorScheme: const ColorScheme.dark(),
       visualDensity: VisualDensity.adaptivePlatformDensity,
+      chipTheme: ChipThemeData(backgroundColor: Colors.black, selectedColor: Colors.white),
       shadowColor: Colors.black);
 }
 

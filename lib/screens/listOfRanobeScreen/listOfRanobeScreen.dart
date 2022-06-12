@@ -21,7 +21,7 @@ class _ListOfRanobeScreenState extends State<listOfRanobeScreen> {
   final Function(String param) function;
   final String param;
   List<Color>? colorsOfRatingList = [];
-  Map<String, String> mapOfRanobeTitleAndHref = {};
+  Map<String, String> mapOfRanobeTitleAndHref = {}; //title:href
   late double width;
   late double height;
 
@@ -52,7 +52,7 @@ class _ListOfRanobeScreenState extends State<listOfRanobeScreen> {
                   href: mapOfRanobeTitleAndHref[
                       mapOfRanobeTitleAndHref.keys.elementAt(index)],
                   rating: index + 1,
-                  color: colorsOfRatingList![index],
+                  colorOfRatingImage: colorsOfRatingList![index],
                 )));
   }
 

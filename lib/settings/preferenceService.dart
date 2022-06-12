@@ -26,23 +26,31 @@ class PreferenceService {
     await _pref?.setBool(Const.isDarkKey, false);
   }
 
-  static bool checkFavourite(String key) {
-    return _pref!.containsKey(key);
+  static addFavourite(
+      String key, String lastKey, DefaultRanobeModel model) async {
+    deleteFavourite(lastKey, model);
+    List<String>? lst = _pref?.getStringList(key);
+    print("PrefCheck: Length: ${lst?.length ?? 0}");
+    lst?.add(jsonEncode(model.toJson()));
+    print(
+        "PostCheck: Key: ${key}; LastKey ${lastKey}; Length: ${lst?.length ?? 0}");
+    await _pref?.setStringList(key, lst ?? [jsonEncode(model.toJson())]);
   }
 
-  static deleteFavourite(String key) async {
-    if (_pref!.containsKey(key)) await _pref!.remove(key);
+  static deleteFavourite(String key, DefaultRanobeModel model) async {
+    List<String>? lst = _pref?.getStringList(key);
+    if (checkFavourite(key, model)) {
+      lst?.remove(jsonEncode(model.toJson()));
+      await _pref?.setStringList(key, lst ?? []);
+    }else{print("Error on deleting");}
   }
 
-  static addFavourite(String key, DefaultRanobeModel ranobe) async {
-    await _pref!.setString(key, jsonEncode(ranobe.toJson()));
+  static List<String>? getListOfFavouritesByKey(String key) {
+    return _pref?.getStringList(key);
   }
 
-  static DefaultRanobeModel getFavourite(String string) {
-    return DefaultRanobeModel.fromJson(jsonDecode(string));
-  }
-
-  static getFavourites() {
-    return _pref!.getKeys();
+  static bool checkFavourite(String key, DefaultRanobeModel? model) {
+    return _pref?.getStringList(key)?.contains(jsonEncode(model?.toJson())) ??
+        false;
   }
 }

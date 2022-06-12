@@ -2,11 +2,11 @@ class Const {
   static const isDarkKey = "isDark";
   static const pathToImages = "assets/images/";
   static const ranobeDomain = "https://ranobe.me/";
-  static const readedkey = 1;
-  static const abandonedKey = 2;
-  static const postponedKey = 3;
-  static const plannedKey = 4;
-  static const readingKey = 5;
+  static const readKey = 0;
+  static const abandonedKey = 1;
+  static const postponedKey = 2;
+  static const plannedKey = 3;
+  static const readingKey = 4;
 
 /*
 
