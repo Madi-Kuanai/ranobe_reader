@@ -42,7 +42,9 @@ class PreferenceService {
     if (checkFavourite(key, model)) {
       lst?.remove(jsonEncode(model.toJson()));
       await _pref?.setStringList(key, lst ?? []);
-    }else{print("Error on deleting");}
+    } else {
+      print("Error on deleting");
+    }
   }
 
   static List<String>? getListOfFavouritesByKey(String key) {

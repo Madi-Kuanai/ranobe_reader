@@ -68,8 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: height! * 0.02,
                   ),
                 ),
-                buildPopularsChoice(context),
-                buildPopulars()
+                buildPopularsTimeFrameChoice(context),
+                buildPopulars(),
+                
               ],
             ),
           )
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : Container();
   }
 
-  SingleChildScrollView buildPopularsChoice(BuildContext context) {
+  SingleChildScrollView buildPopularsTimeFrameChoice(BuildContext context) {
     return SingleChildScrollView(
       child: Row(
         children: [

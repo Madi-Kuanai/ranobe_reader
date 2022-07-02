@@ -31,7 +31,6 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
       this.title, this.href, this.rating, this.colorOfRatingImage);
 
   final title, href;
-  Map<String, String> genres = {};
   final int rating;
   final Color colorOfRatingImage;
   late double width, height;
@@ -73,6 +72,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           buildCover(),
+          //We split cover and another informs in 2 parts
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,9 +102,20 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
 
   Container buildGenres() {
     return Container(
-        // height: ,
-        //         child: ,
-        );
+      margin: EdgeInsets.only(top: height * 0.01, left: width * 0.03),
+      width: width * 0.73,
+      height: height * 0.03,
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          return genreCard(model?.genres?.keys.elementAt(index),
+              model?.genres![model?.genres?.keys.elementAt(index)]);
+        },
+        scrollDirection: Axis.horizontal,
+        dragStartBehavior: DragStartBehavior.start,
+        shrinkWrap: true,
+        itemCount: model?.genres?.keys.length,
+      ),
+    );
   }
 
   GestureDetector buildAdderToLibrary(BuildContext context) {
@@ -255,56 +266,68 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
               switch (selectedIndex) {
                 case 0:
                   {
-                    PreferenceService.addFavourite(
-                        "0", lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = itemsTitleOfDropdown[0];
-                    });
+                    if (typeFavourite != itemsTitleOfDropdown[0]) {
+                      PreferenceService.addFavourite(
+                          "0", lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = itemsTitleOfDropdown[0];
+                      });
+                    }
                     break;
                   }
                 case 1:
                   {
-                    PreferenceService.addFavourite(
-                        "1", lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = itemsTitleOfDropdown[1];
-                    });
+                    if (typeFavourite != itemsTitleOfDropdown[1]) {
+                      PreferenceService.addFavourite(
+                          "1", lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = itemsTitleOfDropdown[1];
+                      });
+                    }
                     break;
                   }
                 case 2:
                   {
-                    PreferenceService.addFavourite(
-                        "2", lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = itemsTitleOfDropdown[2];
-                    });
+                    if (typeFavourite != itemsTitleOfDropdown[2]) {
+                      PreferenceService.addFavourite(
+                          "2", lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = itemsTitleOfDropdown[2];
+                      });
+                    }
                     break;
                   }
                 case 3:
                   {
-                    PreferenceService.addFavourite(
-                        "3", lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = itemsTitleOfDropdown[3];
-                    });
+                    if (typeFavourite != itemsTitleOfDropdown[3]) {
+                      PreferenceService.addFavourite(
+                          "3", lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = itemsTitleOfDropdown[3];
+                      });
+                    }
                     break;
                   }
                 case 4:
                   {
-                    PreferenceService.addFavourite(
-                        "4", lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = itemsTitleOfDropdown[4];
-                    });
+                    if (typeFavourite != itemsTitleOfDropdown[4]) {
+                      PreferenceService.addFavourite(
+                          "4", lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = itemsTitleOfDropdown[4];
+                      });
+                    }
                     break;
                   }
                 case 999:
                   {
-                    PreferenceService.deleteFavourite(
-                        lastIndex.toString(), model!);
-                    setState(() {
-                      typeFavourite = "Добавить к";
-                    });
+                    if (typeFavourite != "Добавить к") {
+                      PreferenceService.deleteFavourite(
+                          lastIndex.toString(), model!);
+                      setState(() {
+                        typeFavourite = "Добавить к";
+                      });
+                    }
                     break;
                   }
               }
@@ -344,7 +367,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                     (tempSelectedChoiceChipIndex ??
                         999 /* 999 если ничего не выбрано */)
                 ? themeData?.colorScheme.onPrimary
-                : themeData!.chipTheme.backgroundColor,
+                : themeData!.chipTheme.secondarySelectedColor,
             borderRadius: const BorderRadius.all(
               Radius.circular(20),
             ),
@@ -362,8 +385,8 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
               presetFontSizes: const [16, 14, 12],
               style: TextStyle(
                 color: tempIndex == (tempSelectedChoiceChipIndex ?? 999)
-                    ? themeData?.chipTheme.selectedColor
-                    : themeData!.colorScheme.onPrimary,
+                    ? themeData!.scaffoldBackgroundColor
+                    : themeData?.colorScheme.onPrimary,
               ),
             ),
           ],
@@ -402,7 +425,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
           ),
         ),
       ),
-      height: height * 0.15,
+      height: height * 0.2,
       width: width * 0.225,
     );
   }
@@ -441,5 +464,24 @@ Postponed - Отложено
 Planned - Запланировано
 Reading - Читаю
 * */
+  }
+
+  Container genreCard(genreTitle, href) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+          horizontal: width * 0.005, vertical: height * 0.001),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xff3D60D7), width: 1.25)),
+      child: Container(
+        margin: EdgeInsets.symmetric(
+            horizontal: width * 0.02, vertical: height * 0.003),
+        child: AutoSizeText(genreTitle ?? "",
+            presetFontSizes: const [14],
+            style: TextStyle(
+              color: themeData?.colorScheme.onPrimary,
+            )),
+      ),
+    );
   }
 }
