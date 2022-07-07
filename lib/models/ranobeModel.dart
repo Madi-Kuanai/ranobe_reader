@@ -22,14 +22,18 @@ abstract class RanobeModel {
 
 class DefaultRanobeModel extends RanobeModel {
   final Map<String, String>? genres;
+  final String description;
+  final String domainLink;
 
-  DefaultRanobeModel(
-      {required int id,
-      required String name,
-      required String href,
-      required String coverLink,
-      required this.genres})
-      : super(id, name, href, coverLink);
+  DefaultRanobeModel({
+    required int id,
+    required String name,
+    required String href,
+    required String coverLink,
+    required this.domainLink,
+    required this.genres,
+    required this.description,
+  }) : super(id, name, href, coverLink);
 
   factory DefaultRanobeModel.fromJson(Map<String, dynamic> json) {
     return DefaultRanobeModel(
@@ -37,7 +41,9 @@ class DefaultRanobeModel extends RanobeModel {
         name: json["name"],
         href: json["href"],
         coverLink: json["coverLink"],
-        genres: json["genres"]);
+        domainLink: json["domainLink"],
+        genres: json["genres"],
+        description: json["description"]);
   }
 
   Map<String, dynamic> toJson() => {
@@ -45,7 +51,9 @@ class DefaultRanobeModel extends RanobeModel {
         "name": name,
         "href": href,
         "coverLink": coverLink,
-        "genres": genres
+        "description": description,
+        "genres": genres,
+        "domainLink": domainLink
       };
 }
 
@@ -60,6 +68,7 @@ class NewChaptersModel extends DefaultRanobeModel {
       required String href,
       required String coverLink,
       required Map<String, String> genres,
+      required String domainLink,
       required this.updateAt,
       required this.howMany,
       required this.newChapters})
@@ -68,5 +77,7 @@ class NewChaptersModel extends DefaultRanobeModel {
             name: name,
             href: href,
             coverLink: coverLink,
-            genres: genres);
+            genres: genres,
+            description: "",
+            domainLink: domainLink);
 }

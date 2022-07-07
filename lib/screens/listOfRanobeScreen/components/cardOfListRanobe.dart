@@ -403,7 +403,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
             alignment: Alignment.topLeft,
             children: [
               model?.coverLink != null
-                  ? Image.network(Const.ranobeDomain + model?.coverLink!)
+                  ? Image.network(Const.ranobeMeDomain + model?.coverLink!)
                   : Container(),
               Container(
                 decoration: BoxDecoration(

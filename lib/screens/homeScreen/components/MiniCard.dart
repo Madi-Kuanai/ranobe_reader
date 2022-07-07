@@ -5,28 +5,14 @@ import 'package:ranobe_reader/models/ranobeModel.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../../../consts.dart';
 
-class MiniCardsOfRanobe extends StatefulWidget {
-  DefaultRanobeModel ranobeModel;
-
-  MiniCardsOfRanobe({required this.ranobeModel, Key? key}) : super(key: key);
-
-  @override
-  State<MiniCardsOfRanobe> createState() =>
-      _MiniCardsOfRanobeState(ranobeModel);
-}
-
-class _MiniCardsOfRanobeState extends State<MiniCardsOfRanobe> {
+class MiniCardsOfRanobe extends StatelessWidget{
   DefaultRanobeModel? model;
   late double width;
   late double height;
   ThemeData? themeData;
 
-  _MiniCardsOfRanobeState(this.model);
+  MiniCardsOfRanobe(this.model);
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +32,7 @@ class _MiniCardsOfRanobeState extends State<MiniCardsOfRanobe> {
                 child: FittedBox(
                     fit: BoxFit.fill,
                     child:
-                        Image.network(Const.ranobeDomain + model!.coverLink)),
+                        Image.network(Const.ranobeMeDomain + model!.coverLink)),
               )),
           Container(
             decoration: BoxDecoration(boxShadow: [

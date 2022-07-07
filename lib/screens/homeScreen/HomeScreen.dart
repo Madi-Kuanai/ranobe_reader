@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ranobe_reader/backend/ParseRanobe/getHomeInfo.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
+import 'package:ranobe_reader/screens/homeScreen/components/CardsWithDescription.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/MiniCard.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/cardOfUpdates.dart';
 import 'package:ranobe_reader/screens/listOfRanobeScreen/listOfRanobeScreen.dart';
@@ -19,14 +20,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ThemeData? themeData;
-  double? width;
-  double? height;
+  double? width, height;
   List<NewChaptersModel>? lstOfNewCh;
   List<DefaultRanobeModel>? lstOfPopular = [];
+  List<CardsWithDescription>? lstOfStat = [];
   Color? textColor;
   StreamController? controller = StreamController<DefaultRanobeModel>();
   StreamSubscription? subscription;
   bool isInternetError = false;
+  int pageNum = 1;
 
   @override
   void initState() {
@@ -42,41 +44,94 @@ class _HomeScreenState extends State<HomeScreen> {
     height = MediaQuery.of(context).size.height;
     TextStyle headerStyle =
         GoogleFonts.notoSans(color: textColor, fontWeight: FontWeight.bold);
-    return lstOfNewCh != null && lstOfPopular!.length > 3 && !isInternetError
+    return lstOfNewCh != null &&
+            lstOfPopular!.length > 3 &&
+            !isInternetError &&
+            lstOfStat != null
         ? Container(
             margin: EdgeInsets.only(left: width! * 0.035),
-            child: Column(
-              children: [
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    "Обновления",
-                    style: headerStyle,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Обновления",
+                      style: headerStyle,
+                    ),
+                    margin: EdgeInsets.only(
+                      top: height! * 0.01,
+                    ),
                   ),
-                  margin: EdgeInsets.only(
-                    top: height! * 0.01,
+                  buildUpdatedRanobe(),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Популярные",
+                      style: headerStyle,
+                    ),
+                    margin: EdgeInsets.only(
+                      top: height! * 0.02,
+                    ),
                   ),
-                ),
-                buildUpdatedRanobe(),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    "Популярные",
-                    style: headerStyle,
+                  buildPopularsTimeFrameChoice(context),
+                  buildPopulars(),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.symmetric(vertical: height! * 0.01),
+                    child: Text(
+                      "Топ по количеству просмотров",
+                      style: headerStyle,
+                    ),
                   ),
-                  margin: EdgeInsets.only(
-                    top: height! * 0.02,
-                  ),
-                ),
-                buildPopularsTimeFrameChoice(context),
-                buildPopulars(),
-                
-              ],
-            ),
-          )
+                  buildStatListView()
+                ],
+              ),
+            ))
         : isInternetError
             ? Container()
             : Container();
+  }
+
+  Container buildStatListView() {
+    return Container(
+        margin: EdgeInsets.only(top: height! * 0.01),
+        child: SizedBox(
+            width: width,
+            child: Column(
+              children: <Widget>[
+                ...?lstOfStat?.map((e) => e),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      pageNum++;
+                      parseRanobeByStatic(pageNum);
+                    });
+                  },
+                  child: AutoSizeText(
+                    "Загрузить",
+                    style: TextStyle(color: themeData!.scaffoldBackgroundColor),
+                  ),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                          themeData?.colorScheme.onPrimary)),
+                )
+              ],
+            )));
+  }
+
+  Future<void> parseRanobeByStatic(int i) async {
+    try {
+      if (mounted) {
+        setState(() {
+          ParseByStatistic.parseByStat(i).then((value) {
+            lstOfStat?.addAll(value.map((e) => CardsWithDescription(e)));
+          });
+        });
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   SingleChildScrollView buildPopularsTimeFrameChoice(BuildContext context) {
@@ -135,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Container buildPopulars() {
     return Container(
-      margin: EdgeInsets.only(top: height! * 0.025),
+      margin: EdgeInsets.only(top: height! * 0.01, bottom: height! * 0.01),
       width: width,
       height: height! * 0.15,
       child: ListView.builder(
@@ -143,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
           shrinkWrap: true,
           itemCount: lstOfPopular!.length,
           itemBuilder: (context, index) =>
-              MiniCardsOfRanobe(ranobeModel: lstOfPopular![index])),
+              MiniCardsOfRanobe(lstOfPopular![index])),
     );
   }
 
@@ -181,6 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//Раздел обновления
   Container buildUpdatedRanobe() {
     return Container(
       width: double.infinity,
@@ -191,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: lstOfNewCh?.length,
         itemBuilder: (context, index) {
-          return newChaptersCard(ranobeModel: lstOfNewCh![index]);
+          return UpdatedSectionCard(lstOfNewCh![index]);
         },
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -202,6 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //Загружаем основные информации
   void initInfo() {
     try {
       if (mounted) {
@@ -213,13 +270,16 @@ class _HomeScreenState extends State<HomeScreen> {
         PopularRanobe().parsePopularsForMiniCards(controller!, "");
         subscription = controller?.stream.listen((event) {
           if (lstOfPopular!.length < 25) {
-            setState(() {
-              lstOfPopular?.add(event);
-            });
+            if (mounted) {
+              setState(() {
+                lstOfPopular?.add(event);
+              });
+            }
           } else {
             subscription?.cancel();
           }
         });
+        parseRanobeByStatic(pageNum);
       }
     } catch (ex) {
       if (ex.runtimeType == SocketException) {

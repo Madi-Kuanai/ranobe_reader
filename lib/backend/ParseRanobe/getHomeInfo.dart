@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranobe_reader/MyErrors.dart';
+import 'package:ranobe_reader/consts.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
 
 class NewChapters {
@@ -53,7 +54,8 @@ class NewChapters {
               howMany: int.parse(howMany!),
               newChapters: newChapters,
               updateAt: updateAt,
-              genres: {}));
+              genres: {},
+              domainLink: Const.ranobeMeDomain));
         }
       } else {
         throw StatusError("Status error is: " + response.statusCode.toString());
@@ -129,6 +131,8 @@ class PopularRanobe {
             href: href,
             coverLink: coverLink,
             genres: genres,
+            domainLink: Const.ranobeMeDomain,
+            description: '',
           ));
         }
       } else {
@@ -193,6 +197,62 @@ class DefaultRanobe {
       href: href,
       coverLink: coverLink,
       genres: genres,
+      description: '',
+      domainLink: Const.ranobeMeDomain,
     );
+  }
+}
+
+class ParseByStatistic {
+  static Future<List<DefaultRanobeModel>> parseByStat(int page) async {
+    try {
+      List<DefaultRanobeModel> listOfResult = [];
+      var searchRequest = await http.get(Uri.parse(
+          "https://ranobe.me/catalog?sort=stat" +
+              (page == 1 ? "" : "&page=" + page.toString())));
+      if (searchRequest.statusCode == 200) {
+        var document = parse(searchRequest.body);
+        for (int i = 0;
+            i < document.getElementsByClassName("FicTable").length;
+            i++) {
+          var card = document.getElementsByClassName("FicTable")[i];
+          var href = card
+              .getElementsByClassName('FicTable_Cover')[0]
+              .getElementsByTagName("a")[0]
+              .attributes["href"];
+          var coverLink = card
+              .getElementsByClassName('FicTable_Cover')[0]
+              .getElementsByTagName("a")[0]
+              .getElementsByTagName("img")[0]
+              .attributes["src"];
+          var name = card
+              .getElementsByClassName("FicTable_Title")[0]
+              .getElementsByTagName("a")[0]
+              .text;
+          Map<String, String> genres = {};
+          for (var genre in card
+              .getElementsByClassName("FicTable_Genres")[0]
+              .getElementsByTagName("a")) {
+            genres[genre.text] = genre.attributes["href"].toString();
+          }
+          var description = card
+              .getElementsByClassName("FicTable_Description")[0]
+              .text
+              .replaceFirst(
+                  card.getElementsByClassName("FicTable_Genres")[0].text, "");
+          listOfResult.add(DefaultRanobeModel(
+              id: int.parse(href!.replaceFirst("/ranobe", "")),
+              coverLink: coverLink ?? "",
+              name: name,
+              href: href,
+              description: description,
+              genres: genres,
+              domainLink: Const.ranobeMeDomain));
+        }
+      }
+      return listOfResult;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 }

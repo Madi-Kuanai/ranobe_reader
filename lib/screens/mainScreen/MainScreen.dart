@@ -36,7 +36,8 @@ class _MainScreenState extends State<MainScreen> {
     height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: theme?.scaffoldBackgroundColor,
-      body: _indexOfScreen == 0
+      body: SafeArea(
+        child: _indexOfScreen == 0
             ? const HomeScreen()
             : _indexOfScreen == 1
                 ? const ExploreScreen()
@@ -45,6 +46,7 @@ class _MainScreenState extends State<MainScreen> {
                     : _indexOfScreen == 3
                         ? const DownloadScreen()
                         : const SettingScreen(),
+      ),
       bottomNavigationBar: buildBottomNavigationBar(),
       appBar: buildAppBar(context),
       resizeToAvoidBottomInset: false,
