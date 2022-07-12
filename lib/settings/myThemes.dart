@@ -10,7 +10,7 @@ class MyTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xff1C1B20),
       ),
-      colorScheme: const ColorScheme.light(),
+      colorScheme: const ColorScheme.light().copyWith(secondary: Colors.white10),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       chipTheme: const ChipThemeData(
           backgroundColor: Colors.white,
@@ -26,7 +26,7 @@ class MyTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.white,
       ),
-      colorScheme: const ColorScheme.dark(),
+      colorScheme: const ColorScheme.dark().copyWith(secondary: Colors.black26),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       shadowColor: Colors.black);
 }

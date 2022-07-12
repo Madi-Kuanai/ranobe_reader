@@ -104,8 +104,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      pageNum++;
-                      parseRanobeByStatic(pageNum);
+                      parseRanobeByStatic()
+                          .then((value) => setState(() {}));
                     });
                   },
                   child: AutoSizeText(
@@ -120,13 +120,14 @@ class _HomeScreenState extends State<HomeScreen> {
             )));
   }
 
-  Future<void> parseRanobeByStatic(int i) async {
+  Future<void> parseRanobeByStatic() async {
     try {
       if (mounted) {
         setState(() {
-          ParseByStatistic.parseByStat(i).then((value) {
+          ParseByStatistic.parseByStat(pageNum).then((value) {
             lstOfStat?.addAll(value.map((e) => CardsWithDescription(e)));
           });
+          pageNum++;
         });
       }
     } catch (e) {
@@ -279,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
             subscription?.cancel();
           }
         });
-        parseRanobeByStatic(pageNum);
+        parseRanobeByStatic();
       }
     } catch (ex) {
       if (ex.runtimeType == SocketException) {

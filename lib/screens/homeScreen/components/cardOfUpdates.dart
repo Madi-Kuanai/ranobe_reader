@@ -44,14 +44,15 @@ class UpdatedSectionCard extends StatelessWidget {
                     presetFontSizes: const [16, 14, 10],
                   ),
                 ),
-                SizedBox(
+                Container(
+                  margin: EdgeInsets.only(top: height * 0.02),
                   width: width * 0.4,
-                  height: height * 0.05,
+                  height: height * 0.025,
                   child: AutoSizeText(
                     "Добавлено глав: " + model!.howMany.toString(),
                     maxLines: 3,
                     style: titleStyle,
-                    presetFontSizes: const [12, 10],
+                    presetFontSizes: const [13, 12],
                   ),
                 ),
                 SizedBox(
