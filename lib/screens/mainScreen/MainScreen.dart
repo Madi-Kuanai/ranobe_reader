@@ -8,7 +8,7 @@ import 'package:ranobe_reader/screens/settingScreen/SettingScreen.dart';
 import 'package:ranobe_reader/settings/myThemes.dart';
 import 'package:ranobe_reader/settings/preferenceService.dart';
 
-import '../../consts.dart';
+import '../../const.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);

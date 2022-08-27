@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranobe_reader/MyErrors.dart';
-import 'package:ranobe_reader/consts.dart';
+import 'package:ranobe_reader/const.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
 
 class NewChapters {
@@ -49,13 +49,13 @@ class NewChapters {
           NewChaptersList.add(NewChaptersModel(
               id: int.parse(id!),
               name: name,
-              href: href!,
+              href: "https://ranobe.me" + href!,
               coverLink: coverLink ?? "NULL",
               howMany: int.parse(howMany!),
               newChapters: newChapters,
               updateAt: updateAt,
               genres: {},
-              domainLink: Const.ranobeMeDomain));
+              domainLink: "https://ranobe.me/"));
         }
       } else {
         throw StatusError("Status error is: " + response.statusCode.toString());
@@ -103,10 +103,10 @@ class PopularRanobe {
           var href = item
               .getElementsByTagName("a")
               .map((e) => e.attributes["href"])
-              .first;
+              .first!;
           var title = item.getElementsByTagName("a").first.text;
           var temporaryDocument = parse(
-              (await http.get(Uri.parse("https://ranobe.me" + href!))).body);
+              (await http.get(Uri.parse("https://ranobe.me" + href))).body);
           Map<String, String> genres = {};
           for (var genre in temporaryDocument
               .getElementsByClassName("tr")[1]
@@ -128,10 +128,10 @@ class PopularRanobe {
           controller.add(DefaultRanobeModel(
             id: int.parse(href.replaceFirst("/ranobe", "")),
             name: title,
-            href: href,
+            href: "https://ranobe.me" + href,
             coverLink: coverLink,
             genres: genres,
-            domainLink: Const.ranobeMeDomain,
+            domainLink: "https://ranobe.me/",
             description: '',
           ));
         }
@@ -156,10 +156,10 @@ class PopularRanobe {
             i < document.getElementsByClassName("fic").length;
             i++) {
           var item = document.getElementsByClassName("fic")[i];
-          var href = item
+          var href = "https://ranobe.me" + item
               .getElementsByTagName("a")
               .map((e) => e.attributes["href"])
-              .first;
+              .first!;
           var title = item.getElementsByTagName("a").first.text;
           result[title] = href.toString();
         }
@@ -175,10 +175,11 @@ class PopularRanobe {
 }
 
 class DefaultRanobe {
-  Future<DefaultRanobeModel> parseRanobeByLink(
+  static Future<DefaultRanobeModel> parseRanobeByLink(
       String href, String title) async {
+    print("HREF: $href");
     var temporaryDocument =
-        parse((await http.get(Uri.parse("https://ranobe.me" + href))).body);
+        parse((await http.get(Uri.parse(href))).body);
     Map<String, String> genres = {};
     for (var genre in temporaryDocument
         .getElementsByClassName("tr")[1]
@@ -191,14 +192,15 @@ class DefaultRanobe {
         .getElementsByTagName("img")[0]
         .attributes["src"]
         .toString();
+
     return DefaultRanobeModel(
-      id: int.parse(href.replaceFirst("/ranobe", "")),
+      id: int.parse(href.replaceFirst("https://ranobe.me/ranobe", "")),
       name: title,
       href: href,
       coverLink: coverLink,
       genres: genres,
       description: '',
-      domainLink: Const.ranobeMeDomain,
+      domainLink: "https://ranobe.me/",
     );
   }
 }
@@ -216,10 +218,10 @@ class ParseByStatistic {
             i < document.getElementsByClassName("FicTable").length;
             i++) {
           var card = document.getElementsByClassName("FicTable")[i];
-          var href = card
+          String href = card
               .getElementsByClassName('FicTable_Cover')[0]
               .getElementsByTagName("a")[0]
-              .attributes["href"];
+              .attributes["href"]!;
           var coverLink = card
               .getElementsByClassName('FicTable_Cover')[0]
               .getElementsByTagName("a")[0]
@@ -241,13 +243,13 @@ class ParseByStatistic {
               .replaceFirst(
                   card.getElementsByClassName("FicTable_Genres")[0].text, "");
           listOfResult.add(DefaultRanobeModel(
-              id: int.parse(href!.replaceFirst("/ranobe", "")),
+              id: int.parse(href.replaceFirst("/ranobe", "")),
               coverLink: coverLink ?? "",
               name: name,
-              href: href,
+              href: "https://ranobe.me" + href,
               description: description,
               genres: genres,
-              domainLink: Const.ranobeMeDomain));
+              domainLink: "https://ranobe.me/"));
         }
       }
       return listOfResult;

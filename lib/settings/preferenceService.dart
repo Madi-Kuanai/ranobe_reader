@@ -1,10 +1,8 @@
 /*
 * {Madi Kuanai}
 */
-import 'dart:convert';
 
-import 'package:ranobe_reader/consts.dart';
-import 'package:ranobe_reader/models/ranobeModel.dart';
+import 'package:ranobe_reader/const.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferenceService {
@@ -26,21 +24,17 @@ class PreferenceService {
     await _pref?.setBool(Const.isDarkKey, false);
   }
 
-  static addFavourite(
-      String key, String lastKey, DefaultRanobeModel model) async {
+  static addFavourite(String key, String lastKey, String model) async {
     deleteFavourite(lastKey, model);
     List<String>? lst = _pref?.getStringList(key);
-    print("PrefCheck: Length: ${lst?.length ?? 0}");
-    lst?.add(jsonEncode(model.toJson()));
-    print(
-        "PostCheck: Key: ${key}; LastKey ${lastKey}; Length: ${lst?.length ?? 0}");
-    await _pref?.setStringList(key, lst ?? [jsonEncode(model.toJson())]);
+    lst?.add(model);
+    await _pref?.setStringList(key, lst ?? [model]);
   }
 
-  static deleteFavourite(String key, DefaultRanobeModel model) async {
+  static deleteFavourite(String key, String model) async {
     List<String>? lst = _pref?.getStringList(key);
     if (checkFavourite(key, model)) {
-      lst?.remove(jsonEncode(model.toJson()));
+      lst?.remove(model);
       await _pref?.setStringList(key, lst ?? []);
     } else {
       print("Error on deleting");
@@ -51,8 +45,7 @@ class PreferenceService {
     return _pref?.getStringList(key);
   }
 
-  static bool checkFavourite(String key, DefaultRanobeModel? model) {
-    return _pref?.getStringList(key)?.contains(jsonEncode(model?.toJson())) ??
-        false;
+  static bool checkFavourite(String key, String? model) {
+    return _pref?.getStringList(key)?.contains(model) ?? false;
   }
 }

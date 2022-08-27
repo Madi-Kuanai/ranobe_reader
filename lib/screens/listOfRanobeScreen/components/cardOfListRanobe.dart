@@ -5,8 +5,9 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ranobe_reader/backend/ParseRanobe/getHomeInfo.dart';
 import 'package:ranobe_reader/settings/preferenceService.dart';
-import '../../../consts.dart';
+import '../../../const.dart';
 import '../../../models/ranobeModel.dart';
+import '../../RanobeScreen/RanobeScreen.dart';
 
 class CardOfListRanobe extends StatefulWidget {
   final title, href;
@@ -37,9 +38,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
   ThemeData? themeData;
   DefaultRanobeModel? model;
   String? typeFavourite;
-  int? selectedIndex;
-  int? lastIndex;
-  int? tempSelectedChoiceChipIndex;
+  int? selectedIndex, lastIndex, tempSelectedChoiceChipIndex;
   List<String> itemsTitleOfDropdown = [
     "Прочитано",
     "Брошено",
@@ -63,39 +62,50 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
     TextStyle titleStyle =
         GoogleFonts.notoSans(color: themeData?.colorScheme.onPrimary);
 
-    return Container(
-      margin: EdgeInsets.only(bottom: height * 0.01),
-      width: width,
-      height: height * 0.15,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          buildCover(),
-          //We split cover and another informs in 2 parts
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                margin: EdgeInsets.only(
-                    top: height * 0.01,
-                    left: width * 0.02,
-                    bottom: height * 0.01),
-                width: width * 0.7,
-                height: height * 0.06,
-                child: AutoSizeText(
-                  title,
-                  maxLines: 3,
-                  style: titleStyle,
-                  presetFontSizes: const [14, 12, 10],
-                ),
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RanobePage(
+                model: model as RanobeModel,
               ),
-              buildAdderToLibrary(context),
-              buildGenres()
-            ],
-          )
-        ],
+            ));
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: height * 0.01),
+        width: width,
+        height: height * 0.15,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            buildCover(),
+            //We split cover and another informs in 2 parts
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                      top: height * 0.01,
+                      left: width * 0.02,
+                      bottom: height * 0.01),
+                  width: width * 0.7,
+                  height: height * 0.06,
+                  child: AutoSizeText(
+                    title,
+                    maxLines: 3,
+                    style: titleStyle,
+                    presetFontSizes: const [14, 12, 10],
+                  ),
+                ),
+                buildAdderToLibrary(context),
+                buildGenres()
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -268,7 +278,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != itemsTitleOfDropdown[0]) {
                       PreferenceService.addFavourite(
-                          "0", lastIndex.toString(), model!);
+                          "0", lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = itemsTitleOfDropdown[0];
                       });
@@ -279,7 +289,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != itemsTitleOfDropdown[1]) {
                       PreferenceService.addFavourite(
-                          "1", lastIndex.toString(), model!);
+                          "1", lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = itemsTitleOfDropdown[1];
                       });
@@ -290,7 +300,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != itemsTitleOfDropdown[2]) {
                       PreferenceService.addFavourite(
-                          "2", lastIndex.toString(), model!);
+                          "2", lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = itemsTitleOfDropdown[2];
                       });
@@ -301,7 +311,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != itemsTitleOfDropdown[3]) {
                       PreferenceService.addFavourite(
-                          "3", lastIndex.toString(), model!);
+                          "3", lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = itemsTitleOfDropdown[3];
                       });
@@ -312,7 +322,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != itemsTitleOfDropdown[4]) {
                       PreferenceService.addFavourite(
-                          "4", lastIndex.toString(), model!);
+                          "4", lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = itemsTitleOfDropdown[4];
                       });
@@ -323,7 +333,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
                   {
                     if (typeFavourite != "Добавить к") {
                       PreferenceService.deleteFavourite(
-                          lastIndex.toString(), model!);
+                          lastIndex.toString(), model!.name);
                       setState(() {
                         typeFavourite = "Добавить к";
                       });
@@ -403,7 +413,7 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
             alignment: Alignment.topLeft,
             children: [
               model?.coverLink != null
-                  ? Image.network(Const.ranobeMeDomain + model?.coverLink!)
+                  ? Image.network(model!.domainLink + model!.coverLink)
                   : Container(),
               Container(
                 decoration: BoxDecoration(
@@ -432,27 +442,27 @@ class _CardOfListRanobeState extends State<CardOfListRanobe> {
 
   void initOtherInforms() {
     if (mounted) {
-      DefaultRanobe().parseRanobeByLink(href, title).then((value) {
+      DefaultRanobe.parseRanobeByLink(href, title).then((value) {
         if (mounted) {
           setState(() {
             model = value;
-            typeFavourite = PreferenceService.checkFavourite(
-                    Const.readKey.toString(), model)
-                ? "Прочитано"
-                : PreferenceService.checkFavourite(
-                        Const.abandonedKey.toString(), model)
-                    ? "Брошено"
-                    : PreferenceService.checkFavourite(
-                            Const.postponedKey.toString(), model)
-                        ? "Отложено"
-                        : PreferenceService.checkFavourite(
-                                Const.plannedKey.toString(), model)
-                            ? "Запланировано"
-                            : PreferenceService.checkFavourite(
-                                    Const.readingKey.toString(), model)
-                                ? "Читаю"
-                                : "Добавить к";
-          });
+              typeFavourite = PreferenceService.checkFavourite(
+                      Const.readKey.toString(), model?.name)
+                  ? "Прочитано"
+                  : PreferenceService.checkFavourite(
+                          Const.abandonedKey.toString(), model?.name)
+                      ? "Брошено"
+                      : PreferenceService.checkFavourite(
+                              Const.postponedKey.toString(), model?.name)
+                          ? "Отложено"
+                          : PreferenceService.checkFavourite(
+                                  Const.plannedKey.toString(), model?.name)
+                              ? "Запланировано"
+                              : PreferenceService.checkFavourite(
+                                      Const.readingKey.toString(), model?.name  )
+                                  ? "Читаю"
+                                  : "Добавить к";
+            });
         }
       });
     }

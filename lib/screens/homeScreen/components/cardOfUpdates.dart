@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import '../../../consts.dart';
+import '../../../const.dart';
+import '../../RanobeScreen/RanobeScreen.dart';
 
 class UpdatedSectionCard extends StatelessWidget {
   NewChaptersModel? model;
@@ -20,14 +21,24 @@ class UpdatedSectionCard extends StatelessWidget {
     height = MediaQuery.of(context).size.height;
     TextStyle titleStyle =
         GoogleFonts.notoSans(color: themeData?.colorScheme.onPrimary);
-    return SizedBox(
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => RanobePage(
+                model: model as RanobeModel,
+              ),
+            ));
+      },
+        child: SizedBox(
       width: width * 0.6,
       height: height * 0.3,
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.network(Const.ranobeMeDomain + model!.coverLink),
+            child: Image.network(model!.domainLink + model!.coverLink),
           ),
           Container(
             margin: EdgeInsets.only(left: width * 0.015),
@@ -70,6 +81,6 @@ class UpdatedSectionCard extends StatelessWidget {
           )
         ],
       ),
-    );
+    ));
   }
 }

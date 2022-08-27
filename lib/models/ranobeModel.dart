@@ -1,10 +1,12 @@
-abstract class RanobeModel {
+class RanobeModel {
   final int _id;
   final String _name;
   final String _href;
-  final _coverLink;
+  final String _coverLink;
+  final String domainLink;
 
-  RanobeModel(this._id, this._name, this._href, this._coverLink);
+  RanobeModel(
+      this._id, this._name, this._href, this._coverLink, this.domainLink);
 
   @override
   String toString() {
@@ -17,23 +19,22 @@ abstract class RanobeModel {
 
   int get id => _id;
 
-  get coverLink => _coverLink;
+  String get coverLink => _coverLink;
 }
 
 class DefaultRanobeModel extends RanobeModel {
   final Map<String, String>? genres;
   final String description;
-  final String domainLink;
 
   DefaultRanobeModel({
     required int id,
     required String name,
     required String href,
     required String coverLink,
-    required this.domainLink,
+    required String domainLink,
     required this.genres,
     required this.description,
-  }) : super(id, name, href, coverLink);
+  }) : super(id, name, href, coverLink, domainLink);
 
   factory DefaultRanobeModel.fromJson(Map<String, dynamic> json) {
     return DefaultRanobeModel(

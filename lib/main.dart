@@ -2,6 +2,7 @@
 * {Madi Kuanai}
 */
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 import 'package:ranobe_reader/screens/MainScreen/MainScreen.dart';
 import 'package:ranobe_reader/settings/myThemes.dart';
@@ -10,6 +11,7 @@ import 'package:ranobe_reader/settings/preferenceService.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PreferenceService.init();
+  await Hive.initFlutter();
   runApp(MyApp());
 }
 

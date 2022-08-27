@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:ranobe_reader/backend/ParseRanobe/getHomeInfo.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/CardsWithDescription.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/MiniCard.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/cardOfUpdates.dart';
 import 'package:ranobe_reader/screens/listOfRanobeScreen/listOfRanobeScreen.dart';
+
+import '../../const.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -63,7 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       top: height! * 0.01,
                     ),
                   ),
-                  buildUpdatedRanobe(),
+                  UpdatedRanobesWidget(
+                      height: height, lstOfNewCh: lstOfNewCh, width: width),
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
@@ -74,8 +77,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       top: height! * 0.02,
                     ),
                   ),
-                  buildPopularsTimeFrameChoice(context),
-                  buildPopulars(),
+                  PopularTimeFrameWidget(
+                      height: height,
+                      width: width,
+                      themeData: themeData,
+                      textColor: textColor,
+                      context: context),
+                  PopularsWidget(
+                      height: height, width: width, lstOfPopular: lstOfPopular),
                   Container(
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.symmetric(vertical: height! * 0.01),
@@ -84,40 +93,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: headerStyle,
                     ),
                   ),
-                  buildStatListView()
+                  Container(
+                      margin: EdgeInsets.only(top: height! * 0.01),
+                      child: SizedBox(
+                          width: width,
+                          child: Column(
+                            children: <Widget>[
+                              ...?lstOfStat?.map((e) => e),
+                              ElevatedButton(
+                                onPressed: () {
+                                  parseRanobeByStatic()
+                                      .then((value) => setState(() {}));
+                                },
+                                child: AutoSizeText(
+                                  "Загрузить",
+                                  style: TextStyle(
+                                      color:
+                                          themeData!.scaffoldBackgroundColor),
+                                ),
+                                style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        themeData?.colorScheme.onPrimary)),
+                              )
+                            ],
+                          )))
                 ],
               ),
             ))
         : isInternetError
             ? Container()
-            : Container();
-  }
-
-  Container buildStatListView() {
-    return Container(
-        margin: EdgeInsets.only(top: height! * 0.01),
-        child: SizedBox(
-            width: width,
-            child: Column(
-              children: <Widget>[
-                ...?lstOfStat?.map((e) => e),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      parseRanobeByStatic()
-                          .then((value) => setState(() {}));
-                    });
-                  },
-                  child: AutoSizeText(
-                    "Загрузить",
-                    style: TextStyle(color: themeData!.scaffoldBackgroundColor),
-                  ),
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          themeData?.colorScheme.onPrimary)),
-                )
-              ],
-            )));
+            : Center(
+                child: Lottie.asset(
+                  "assets/animations/loadingAnimation.json",
+                  width: width! * 0.5,
+                  height: height! * 0.6,
+                ),
+              );
   }
 
   Future<void> parseRanobeByStatic() async {
@@ -135,12 +146,70 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  SingleChildScrollView buildPopularsTimeFrameChoice(BuildContext context) {
+  //Загружаем основные информации
+  void initInfo() {
+    try {
+      if (mounted) {
+        NewChapters().parseNewChapters().then((value) {
+          if (mounted) {
+            setState(() {
+              lstOfNewCh = value;
+            });
+          }
+        });
+        PopularRanobe().parsePopularsForMiniCards(controller!, "");
+        subscription = controller?.stream.listen((event) {
+          if (lstOfPopular!.length < 25) {
+            if (mounted) {
+              setState(() {
+                lstOfPopular?.add(event);
+              });
+            }
+          } else {
+            subscription?.cancel();
+          }
+        });
+        parseRanobeByStatic();
+      }
+    } catch (ex) {
+      if (ex.runtimeType == SocketException) {
+        setState(() {
+          isInternetError = true;
+        });
+      }
+    }
+  }
+}
+
+class PopularTimeFrameWidget extends StatelessWidget {
+  const PopularTimeFrameWidget({
+    Key? key,
+    required this.height,
+    required this.width,
+    required this.themeData,
+    required this.textColor,
+    required this.context,
+  }) : super(key: key);
+
+  final double? height;
+  final double? width;
+  final ThemeData? themeData;
+  final Color? textColor;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Row(
         children: [
           GestureDetector(
-            child: buildTimeframes("За 7 дней", 0.25),
+            child: TimeframesWidget(
+                height: height,
+                width: width,
+                themeData: themeData,
+                textColor: textColor,
+                text: "За 7 дней",
+                widthCoef: 0.25),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
@@ -151,7 +220,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           GestureDetector(
-            child: buildTimeframes("За все время", 0.3),
+            child: TimeframesWidget(
+                height: height,
+                width: width,
+                themeData: themeData,
+                textColor: textColor,
+                text: "За все время",
+                widthCoef: 0.3),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
@@ -162,7 +237,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           GestureDetector(
-            child: buildTimeframes("За сегодня", 0.3),
+            child: TimeframesWidget(
+                height: height,
+                width: width,
+                themeData: themeData,
+                textColor: textColor,
+                text: "За сегодня",
+                widthCoef: 0.3),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
@@ -173,7 +254,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           GestureDetector(
-            child: buildTimeframes("За вчера", 0.25),
+            child: TimeframesWidget(
+                height: height,
+                width: width,
+                themeData: themeData,
+                textColor: textColor,
+                text: "За вчера",
+                widthCoef: 0.25),
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (BuildContext context) {
@@ -188,22 +275,64 @@ class _HomeScreenState extends State<HomeScreen> {
       scrollDirection: Axis.horizontal,
     );
   }
+}
+//Раздел обновления
 
-  Container buildPopulars() {
+class UpdatedRanobesWidget extends StatelessWidget {
+  const UpdatedRanobesWidget({
+    Key? key,
+    required this.height,
+    required this.lstOfNewCh,
+    required this.width,
+  }) : super(key: key);
+
+  final double? height;
+  final List<NewChaptersModel>? lstOfNewCh;
+  final double? width;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: height! * 0.01, bottom: height! * 0.01),
-      width: width,
-      height: height! * 0.15,
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          itemCount: lstOfPopular!.length,
-          itemBuilder: (context, index) =>
-              MiniCardsOfRanobe(lstOfPopular![index])),
+      width: double.infinity,
+      height: height! * 0.3,
+      margin: EdgeInsets.only(top: height! * 0.01),
+      child: GridView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: lstOfNewCh?.length,
+        itemBuilder: (context, index) {
+          return UpdatedSectionCard(lstOfNewCh![index]);
+        },
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: width! * 0.03,
+            crossAxisSpacing: width! * 0.03,
+            childAspectRatio: 0.4),
+      ),
     );
   }
+}
 
-  Container buildTimeframes(String text, double widthCoef) {
+class TimeframesWidget extends StatelessWidget {
+  const TimeframesWidget({
+    Key? key,
+    required this.height,
+    required this.width,
+    required this.themeData,
+    required this.textColor,
+    required this.text,
+    required this.widthCoef,
+  }) : super(key: key);
+
+  final double? height;
+  final double? width;
+  final ThemeData? themeData;
+  final Color? textColor;
+  final String text;
+  final double widthCoef;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(
           vertical: height! * 0.01, horizontal: width! * 0.01),
@@ -236,58 +365,32 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
 
-//Раздел обновления
-  Container buildUpdatedRanobe() {
+class PopularsWidget extends StatelessWidget {
+  const PopularsWidget({
+    Key? key,
+    required this.height,
+    required this.width,
+    required this.lstOfPopular,
+  }) : super(key: key);
+
+  final double? height;
+  final double? width;
+  final List<DefaultRanobeModel>? lstOfPopular;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: height! * 0.3,
-      margin: EdgeInsets.only(top: height! * 0.01),
-      child: GridView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        itemCount: lstOfNewCh?.length,
-        itemBuilder: (context, index) {
-          return UpdatedSectionCard(lstOfNewCh![index]);
-        },
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: width! * 0.03,
-            crossAxisSpacing: width! * 0.03,
-            childAspectRatio: 0.4),
-      ),
+      margin: EdgeInsets.only(top: height! * 0.01, bottom: height! * 0.01),
+      width: width,
+      height: height! * 0.15,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          itemCount: lstOfPopular!.length,
+          itemBuilder: (context, index) =>
+              MiniCardsOfRanobe(lstOfPopular![index])),
     );
-  }
-
-  //Загружаем основные информации
-  void initInfo() {
-    try {
-      if (mounted) {
-        NewChapters().parseNewChapters().then((value) {
-          setState(() {
-            lstOfNewCh = value;
-          });
-        });
-        PopularRanobe().parsePopularsForMiniCards(controller!, "");
-        subscription = controller?.stream.listen((event) {
-          if (lstOfPopular!.length < 25) {
-            if (mounted) {
-              setState(() {
-                lstOfPopular?.add(event);
-              });
-            }
-          } else {
-            subscription?.cancel();
-          }
-        });
-        parseRanobeByStatic();
-      }
-    } catch (ex) {
-      if (ex.runtimeType == SocketException) {
-        setState(() {
-          isInternetError = true;
-        });
-      }
-    }
   }
 }

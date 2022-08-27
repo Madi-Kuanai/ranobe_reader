@@ -17,13 +17,17 @@ dependencies:
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.0.15
   provider: ^6.0.3
-  html: ^0.15.0
+  html:
   http: ^0.13.4
   google_fonts: ^3.0.1
   auto_size_text: ^3.0.0
-
-  dependencies:
   palette_generator: ^0.3.3+1
+  internet_file: ^1.2.0
+  epub_view: ^3.0.0
+  lottie: ^1.4.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:
@@ -37,7 +41,8 @@ flutter:
     # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-
+    - assets/json/
+    - assets/animations/loadingAnimation.json
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

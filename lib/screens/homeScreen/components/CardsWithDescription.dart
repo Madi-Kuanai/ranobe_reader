@@ -1,13 +1,16 @@
+import 'dart:typed_data';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ranobe_reader/models/ranobeModel.dart';
 import 'package:ranobe_reader/screens/RanobeScreen/RanobeScreen.dart';
 
 class CardsWithDescription extends StatelessWidget {
   DefaultRanobeModel defaultRanobeModel;
-  double? width, height;
+  late double width, height;
   late ThemeData themeData;
 
   CardsWithDescription(this.defaultRanobeModel, {Key? key}) : super(key: key);
@@ -21,9 +24,9 @@ class CardsWithDescription extends StatelessWidget {
     TextStyle titleStyle =
         GoogleFonts.notoSans(color: themeData.colorScheme.onPrimary);
     return Container(
-      margin: EdgeInsets.symmetric(vertical: height! * 0.0055),
+      margin: EdgeInsets.symmetric(vertical: height * 0.0055),
       width: width,
-      height: height! * 0.2,
+      height: height * 0.2,
       child: GestureDetector(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,18 +38,18 @@ class CardsWithDescription extends StatelessWidget {
                 child: Image.network(defaultRanobeModel.domainLink +
                     defaultRanobeModel.coverLink),
               ),
-              width: width! * 0.3,
+              width: width * 0.3,
             ),
             Container(
               alignment: Alignment.centerLeft,
-              margin: EdgeInsets.only(left: width! * 0.025),
+              margin: EdgeInsets.only(left: width * 0.025),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: width! * 0.6,
-                    height: height! * 0.06,
+                    width: width * 0.6,
+                    height: height * 0.06,
                     child: AutoSizeText(
                       defaultRanobeModel.name,
                       style: titleStyle,
@@ -54,8 +57,8 @@ class CardsWithDescription extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: width! * 0.6275,
-                    height: height! * 0.090,
+                    width: width * 0.6275,
+                    height: height * 0.090,
                     child: AutoSizeText(
                       defaultRanobeModel.description,
                       style: GoogleFonts.notoSans(
@@ -82,11 +85,20 @@ class CardsWithDescription extends StatelessWidget {
             )
           ],
         ),
-        onTap: () {
+        onTap: () async {
+          Uint8List uint8list = (await NetworkAssetBundle(Uri.parse(
+                      defaultRanobeModel.domainLink +
+                          defaultRanobeModel.coverLink))
+                  .load(defaultRanobeModel.domainLink +
+                      defaultRanobeModel.coverLink))
+              .buffer
+              .asUint8List();
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => RanobePage(model: defaultRanobeModel),
+                builder: (context) => RanobePage(
+                  model: defaultRanobeModel,
+                ),
               ));
         },
       ),
@@ -96,8 +108,8 @@ class CardsWithDescription extends StatelessWidget {
   Container buildGenres() {
     return Container(
 //      margin: EdgeInsets.only(right: width! * 0.01),
-      width: width! * 0.6275,
-      height: height! * 0.03,
+      width: width * 0.6275,
+      height: height * 0.03,
       child: ListView.builder(
         itemBuilder: (context, index) {
           return genreCard(
@@ -116,13 +128,13 @@ class CardsWithDescription extends StatelessWidget {
   Container genreCard(genreTitle, href) {
     return Container(
       margin: EdgeInsets.symmetric(
-          horizontal: width! * 0.0075, vertical: height! * 0.001),
+          horizontal: width * 0.0075, vertical: height * 0.001),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: const Color(0xff3D60D7), width: 1.25)),
       child: Container(
         margin: EdgeInsets.symmetric(
-            horizontal: width! * 0.02, vertical: height! * 0.003),
+            horizontal: width * 0.02, vertical: height * 0.003),
         child: AutoSizeText(genreTitle ?? "",
             presetFontSizes: const [14],
             style: TextStyle(
