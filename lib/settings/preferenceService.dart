@@ -28,6 +28,7 @@ class PreferenceService {
     deleteFavourite(lastKey, model);
     List<String>? lst = _pref?.getStringList(key);
     lst?.add(model);
+
     await _pref?.setStringList(key, lst ?? [model]);
   }
 

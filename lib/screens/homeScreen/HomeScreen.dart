@@ -11,8 +11,6 @@ import 'package:ranobe_reader/screens/homeScreen/components/MiniCard.dart';
 import 'package:ranobe_reader/screens/homeScreen/components/cardOfUpdates.dart';
 import 'package:ranobe_reader/screens/listOfRanobeScreen/listOfRanobeScreen.dart';
 
-import '../../const.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 

@@ -42,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
             : _indexOfScreen == 1
                 ? const ExploreScreen()
                 : _indexOfScreen == 2
-                    ? const FavouriteScreen()
+                    ?  FavouriteScreen()
                     : _indexOfScreen == 3
                         ? const DownloadScreen()
                         : const SettingScreen(),
